@@ -497,9 +497,7 @@ elif  choice == 'Thông tin nhà hàng':
                     plt.xticks(np.arange(len(row)), []) 
                     plt.gca().invert_yaxis() 
                     plt.box(False)
-                    plt.gca().set_facecolor('none')
-                    ax.patch.set_alpha(0)  # Làm cho nền của ax trong suốt
-                    fig.patch.set_alpha(0)  # Làm cho nền của fig trong suốt
+                    plt.gca().set_facecolor('#0E1117')
                     st.pyplot(plt)
             
             st.markdown(
