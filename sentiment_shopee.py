@@ -481,15 +481,11 @@ elif  choice == 'Thông tin nhà hàng':
             with leftcol1:
                 st.markdown(
                     f"""
-                    <table style="width: 100%; height: 100%;">
-                        <tr>
-                            <td style="text-align: center; vertical-align: middle;">
-                                <h1 style="margin: 0;">{star_rating}</h1>
-                                <h1 style="margin: 0;">{rating}</h1>
-                                <p style="margin: 0;"><strong>{total_rat} đánh giá</strong></p>
-                            </td>
-                        </tr>
-                    </table>
+                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+                        <h1 style="margin: 0;">{star_rating}</h1>
+                        <h1 style="margin: 0;">{rating}</h1>
+                        <p style="margin: 0;"><strong>{total_rat} đánh giá</strong></p>
+                    </div>
                     """,
                     unsafe_allow_html=True
                 )
