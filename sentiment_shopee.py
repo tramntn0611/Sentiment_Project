@@ -478,17 +478,18 @@ elif  choice == 'Thông tin nhà hàng':
             )
 
             leftcol1, rightcol1 = st.columns(2)
-            with leftcol1:  
-                st.markdown(
-                f"""
-                <div style="text-align: center;">
-                    <h1>{star_rating}</h1>
-                    <h1>{rating}</h1>
-                    <p><strong>{total_rat} đánh giá</strong></p>
-                </div>
-                """, 
-                unsafe_allow_html=True
-            )
+            with leftcol1:
+                with st.form(key='RatingForm'):
+                    st.markdown(
+                    f"""
+                    <div style="text-align: center;">
+                        <h1>{star_rating}</h1>
+                        <h1>{rating}</h1>
+                        <p><strong>{total_rat} đánh giá</strong></p>
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
             with rightcol1:
                 df_plot_rat = df_selection.groupby(['Restaurant']).sum()[['9-10', '7-8', '5-6', '3-4', '1-2']]
                 for restaurant, row in df_plot_rat.iterrows():
