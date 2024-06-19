@@ -492,10 +492,10 @@ elif  choice == 'Thông tin nhà hàng':
             with rightcol1:
                 df_plot_rat = df_selection.groupby(['Restaurant']).sum()[['9-10', '7-8', '5-6', '3-4', '1-2']]
                 for restaurant, row in df_plot_rat.iterrows():
-                    plt.figure(figsize=(12, 6))  # Adjust figure size as needed
+                    plt.figure(figsize=(6, 3))
                     plt.barh(row.index, row.values, color=['#F9C70C'])
-                    plt.xticks(np.arange(len(row)), [])  # Hide x-axis ticks
-                    plt.gca().invert_yaxis()  # Invert y-axis to have the highest bar at the top
+                    plt.xticks(np.arange(len(row)), []) 
+                    plt.gca().invert_yaxis() 
                     plt.box(False)
                     plt.gca().set_facecolor('none')
                     st.pyplot(plt)
