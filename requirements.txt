@@ -1,0 +1,10 @@
+streamlit
+numpy
+pandas
+matplotlib
+seaborn
+regex
+nltk
+underthesea
+wordcloud
+option_menu
