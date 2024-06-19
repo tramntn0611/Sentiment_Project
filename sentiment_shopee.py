@@ -486,7 +486,7 @@ elif  choice == 'Thông tin nhà hàng':
                         <h1 style="margin: 0;">{rating}</h1>
                         <p style="margin: 0;"><strong>{total_rat} đánh giá</strong></p>
                     </div>
-                    """, 
+                    """,
                     unsafe_allow_html=True
                 )
             with rightcol1:
