@@ -477,7 +477,7 @@ elif  choice == 'Thông tin nhà hàng':
                 unsafe_allow_html=True
             )
 
-            leftcol1, rightcol1 = st.columns([2,1])
+            leftcol1, rightcol1 = st.columns(2)
             with leftcol1:
                 st.markdown(
                     f"""
