@@ -498,6 +498,8 @@ elif  choice == 'Thông tin nhà hàng':
                     plt.gca().invert_yaxis() 
                     plt.box(False)
                     plt.gca().set_facecolor('none')
+                    ax.patch.set_alpha(0)  # Làm cho nền của ax trong suốt
+                    fig.patch.set_alpha(0)  # Làm cho nền của fig trong suốt
                     st.pyplot(plt)
             
             st.markdown(
