@@ -258,7 +258,9 @@ data['Year'] = data['Date'].dt.year
 with open('restaurant_sentiment.pkl', 'rb') as file:  
     sentiment_model = pickle.load(file)
 with open('model_tfidf.pkl', 'rb') as file:  
-    tfidf_model = pickle.load(file)  
+    tfidf_model = pickle.load(file) 
+with open('pipeline.pkl', 'rb') as file:  
+    sent_model = pickle.load(file)
 
 
 #GUI
@@ -386,6 +388,9 @@ elif choice == 'Xem thêm':
     - Hơn nữa so sánh trực quan Cofusion Matrix cho thấy nhãn Positive và Negative dự đoán được tốt nhất trong tất cả các mô hình trên
     - Do đó ta sẽ chọn Mô hình Logistic Regression RandomOverSampling để dự đoán trên toàn bộ dữ liệu""")
 
+
+
+
 elif choice == 'Phân tích đánh giá':
     st.subheader("🙂😐☹️ Phân tích đánh giá")
     st.write("""
@@ -401,9 +406,8 @@ elif choice == 'Phân tích đánh giá':
         with col1:
             x_new = clean_text_str(text) 
             if isinstance(x_new, str):
-                x_new = [x_new]
-            x_new = tfidf_model.transform(x_new)        
-            y_pred_new = sentiment_model.predict(x_new)       
+                x_new = [x_new] 
+            y_pred_new = sent_model.predict(x_new)       
             st.write(y_pred_new)
             if y_pred_new == 1:
                 st.markdown("Positive 🙂")
@@ -425,12 +429,10 @@ elif choice == 'Phân tích đánh giá':
             df = pd.read_csv(uploaded_file, header=None,)
             st.markdown('Đánh giá của người dùng')
             st.dataframe(df)
-            # st.write(lines.columns)
             lines = df.iloc[:, 0]    
             if len(lines)>0:
-                cleaned_lines = [clean_text_str(str(line)) for line in lines]      
-                x_new = tfidf_model.transform(lines)        
-                y_pred_new = sentiment_model.predict(x_new)
+                cleaned_lines = [clean_text_str(str(line)) for line in lines]             
+                y_pred_new = sent_model.predict(cleaned_lines)
                 df['Sentiment'] = y_pred_new
                 df['Trạng thái'] = [predict_sentiment(text) for text in y_pred_new]
                 st.markdown('Trạng thái đánh giá')
@@ -466,7 +468,7 @@ elif  choice == 'Thông tin nhà hàng':
             add = df_selection["Address"].values[0]
             max_hour = df_selection["Most_Reviewed_Hour"].values[0]
             min_hour = df_selection["Min_Reviewed_Hour"].values[0]
-            total_rat = pos + neg + neu
+            total_rat = int(pos + neg + neu)
 
             st.markdown(
                 f"""
@@ -477,18 +479,18 @@ elif  choice == 'Thông tin nhà hàng':
                 unsafe_allow_html=True
             )
 
-            leftcol1, rightcol1 = st.columns(2)
-            with leftcol1:
+            leftcol1, rightcol1 = st.columns([1, 2])
+            with leftcol1:  
                 st.markdown(
-                    f"""
-                    <div style="text-align: center;">
-                        <h1>{star_rating}</h1>
-                        <h3>{rating}</h3>
-                        <p><strong>{total_rat} đánh giá</strong></p>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
+                f"""
+                <div style="text-align: center;">
+                    <h1>{star_rating}</h1>
+                    <h1>{rating}</h1>
+                    <p><strong>{total_rat} đánh giá</strong></p>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
             with rightcol1:
                 df_plot_rat = df_selection.groupby(['Restaurant']).sum()[['9-10', '7-8', '5-6', '3-4', '1-2']]
                 for restaurant, row in df_plot_rat.iterrows():
@@ -497,7 +499,7 @@ elif  choice == 'Thông tin nhà hàng':
                     plt.xticks(np.arange(len(row)), [])  # Hide x-axis ticks
                     plt.gca().invert_yaxis()  # Invert y-axis to have the highest bar at the top
                     plt.box(False)
-                    plt.gca().set_facecolor('#F9C70C')
+                    plt.gca().set_facecolor('none')
                     st.pyplot(plt)
             
             st.markdown(
@@ -554,17 +556,27 @@ elif  choice == 'Thông tin nhà hàng':
                 plt.axis('off')
                 st.pyplot(plt)
 
+            left_col6, right_col6 = st.columns(2)
+            with left_col6:
+                df_pos_cm = df_selection2[(df_selection2['Sentiment'] == 'Positive')]
+                df_pos_cm = df_pos_cm[['User', 'Time', 'Comment']]
+                st.dataframe(df_pos_cm)
+            with right_col6:
+                df_neg_cm = df_selection2[(df_selection2['Sentiment'] == 'Negative')]
+                df_neg_cm = df_neg_cm[['User', 'Time', 'Comment']]
+                st.dataframe(df_neg_cm)
+
+
             # Plotting function
             def plot_sentiment_rating_trend(df_selection2, data):
                 df_sub = data[data['Restaurant'] == df_selection2["Restaurant"].values[0]]
                 grb = df_sub.groupby(['Year', 'Month']).agg({
                     'Sentiment': [('Positive', lambda x: (x == 'Positive').sum()),
-                                ('Neutral', lambda x: (x == 'Neutral').sum()),
                                 ('Negative', lambda x: (x == 'Negative').sum())],
                     'Comment': 'count',
                     'Rating': 'mean'
                 }).reset_index()
-                grb.columns = ['Year', 'Month', 'Positive', 'Neutral', 'Negative', 'num_comment', 'Rating']
+                grb.columns = ['Year', 'Month', 'Positive', 'Negative', 'num_comment', 'Rating']
                 grb = grb.sort_values(by=['Year', 'Month'])
                 grb['DateTime'] = pd.to_datetime(grb['Month'].astype(str) + '/' + grb['Year'].astype(str), format='%m/%Y')
 
@@ -580,7 +592,6 @@ elif  choice == 'Thông tin nhà hàng':
 
                 plt.figure(figsize=(10, 6))
                 plt.plot(grb['DateTime'], grb['Positive'], label='Positive', color='green', marker='o', markersize=3)
-                plt.plot(grb['DateTime'], grb['Neutral'], label='Neutral', color='blue', marker='o', markersize=3)
                 plt.plot(grb['DateTime'], grb['Negative'], label='Negative', color='red', marker='o', markersize=3)
                 plt.title('Biểu đồ các loại Sentiment theo thời gian')
                 plt.xlabel('Thời gian')
